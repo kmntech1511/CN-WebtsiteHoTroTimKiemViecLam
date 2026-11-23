@@ -1,0 +1,58 @@
+@model WebTimViec.Models.HoSo.HoSoDashboardViewModel
+@{
+    ViewData["Title"] = "Hồ sơ của tôi";
+}
+
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+
+<section class="profile-page">
+    <div class="container">
+        <div class="profile-heading">
+            <div>
+                <span class="eyebrow">KHU VỰC CÁ NHÂN</span>
+                <h1>Hồ sơ của tôi</h1>
+                <p>Quản lý thông tin và hồ sơ tìm việc của bạn.</p>
+            </div>
+            <a class="button" asp-action="Create">+ Tạo hồ sơ mới</a>
+        </div>
+
+        <div class="profile-overview">
+            <div class="profile-user-card">
+                <div class="large-avatar">@Model.HoTen.FirstOrDefault()</div>
+                <div>
+                    <h2>@Model.HoTen</h2>
+                    <p>@Model.Email</p>
+                    <small>@(Model.Sdt ?? "Chưa cập nhật số điện thoại")</small>
+                </div>
+                <a class="outline-button" href="#">Chỉnh sửa</a>
+            </div>
+            <div class="completion-card">
+                <div class="completion-top"><strong>Mức độ hoàn thiện</strong><b>@(Model.SoHoSo > 0 ? "60%" : "20%")</b></div>
+                <div class="progress-track"><span style="width: @(Model.SoHoSo > 0 ? "60%" : "20%")"></span></div>
+                <p>@(Model.SoHoSo > 0 ? "Hãy bổ sung thêm thông tin để hồ sơ nổi bật hơn." : "Tạo hồ sơ đầu tiên để bắt đầu hành trình.")</p>
+            </div>
+        </div>
+
+        <div class="profile-stats">
+            <div><span class="stat-icon blue">▣</span><strong>@Model.SoHoSo</strong><small>Hồ sơ tìm việc</small></div>
+            <div><span class="stat-icon green">✦</span><strong>@Model.SoKyNang</strong><small>Kỹ năng</small></div>
+            <div><span class="stat-icon orange">◷</span><strong>@Model.SoKinhNghiem</strong><small>Kinh nghiệm</small></div>
+            <div><span class="stat-icon purple">▤</span><strong>@(Model.SoBangCap + Model.SoChungChi)</strong><small>Bằng cấp & chứng chỉ</small></div>
+        </div>
+
+        <div class="resume-section-heading"><div><h2>Hồ sơ tìm việc</h2><p>Các hồ sơ bạn đã tạo và đang quản lý.</p></div></div>
+        @if (Model.HoSos.Count == 0)
+        {
+            <div class="empty-profile"><div class="empty-icon">＋</div><h3>Bạn chưa có hồ sơ tìm việc</h3><p>Tạo hồ sơ để bắt đầu giới thiệu năng lực và mục tiêu nghề nghiệp của bạn.</p><a class="button" asp-action="Create">Tạo hồ sơ đầu tiên</a></div>
+        }
+        else
+        {
+            <div class="resume-list">
+                @foreach (var resume in Model.HoSos)
+                {
+                    <article class="resume-card"><div><span class="resume-status">@(resume.TrangThai ? "Đang hiển thị" : "Bản nháp")</span><h3>@resume.TieuDe</h3><p>@(resume.DiaDiemMongMuon ?? "Chưa cập nhật địa điểm") · @(resume.HinhThucLamViec ?? "Chưa cập nhật hình thức")</p></div><a class="outline-button" href="#">Xem chi tiết</a></article>
+                }
+            </div>
+        }
+    </div>
+</section>
