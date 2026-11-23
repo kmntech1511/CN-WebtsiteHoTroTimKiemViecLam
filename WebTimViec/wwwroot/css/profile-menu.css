@@ -1,0 +1,77 @@
+.profile-menu {
+    position: relative;
+}
+
+.profile-trigger {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    cursor: pointer;
+    list-style: none;
+    color: var(--ink);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.profile-trigger::-webkit-details-marker {
+    display: none;
+}
+
+.profile-avatar {
+    display: grid;
+    place-items: center;
+    width: 38px;
+    height: 38px;
+    border: 3px solid #ef2027;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--primary);
+    font-weight: 800;
+}
+
+.profile-chevron {
+    color: var(--muted);
+    font-size: 17px;
+}
+
+.profile-dropdown {
+    position: absolute;
+    top: 48px;
+    right: 0;
+    z-index: 20;
+    min-width: 190px;
+    padding: 8px;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: #fff;
+    box-shadow: 0 14px 30px #17243b24;
+}
+
+.profile-dropdown a,
+.profile-dropdown button {
+    display: block;
+    width: 100%;
+    padding: 9px 11px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.profile-dropdown a:hover,
+.profile-dropdown button:hover {
+    background: var(--light);
+    color: var(--primary);
+}
+
+@media (max-width: 800px) {
+    .profile-name,
+    .profile-chevron {
+        display: none;
+    }
+}

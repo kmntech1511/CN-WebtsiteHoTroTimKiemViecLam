@@ -1,55 +1,62 @@
-@{ ViewData["Title"] = "Đăng ký"; }
+@model WebTimViec.Models.Account.RegisterViewModel
+@{
+    ViewData["Title"] = "Đăng ký";
+}
+
 <link rel="stylesheet" href="~/css/auth.css" asp-append-version="true" />
+
 <section class="auth-page">
-<div class="auth-panel">
-<div class="auth-intro">
-<span class="eyebrow">BẮT ĐẦU HÀNH TRÌNH MỚI</span>
+    <div class="auth-panel">
+        <div class="auth-intro">
+            <span class="eyebrow">BẮT ĐẦU HÀNH TRÌNH MỚI</span>
+            <h1>Tạo hồ sơ, mở rộng cơ hội.</h1>
+            <p>Tham gia WebTimViec để lưu trữ và giới thiệu năng lực của bạn một cách chuyên nghiệp.</p>
+            <div class="benefit-list">
+                <span>✓ Quản lý hồ sơ tập trung</span>
+                <span>✓ Sắp xếp kỹ năng, bằng cấp rõ ràng</span>
+                <span>✓ Chủ động cập nhật thông tin tìm việc</span>
+            </div>
+        </div>
 
-<h1>Tạo hồ sơ, mở rộng cơ hội.</h1>
+        <div class="auth-form-wrap">
+            <div class="form-heading">
+                <span class="brand-mark">W</span>
+                <h2>Tạo tài khoản</h2>
+                <p>Điền thông tin để bắt đầu</p>
+            </div>
 
-<p>Tham gia WebTimViec để lưu trữ và giới thiệu năng lực của bạn một cách chuyên nghiệp.</p>
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
 
-<div class="benefit-list">
-<span>✓ Quản lý hồ sơ tập trung</span>
+                <label asp-for="HoTen"></label>
+                <input asp-for="HoTen" placeholder="Nhập họ và tên" />
+                <span asp-validation-for="HoTen" class="field-error"></span>
 
-<span>✓ Sắp xếp kỹ năng, bằng cấp rõ ràng</span>
+                <label asp-for="TenDangNhap"></label>
+                <input asp-for="TenDangNhap" placeholder="Nhập tên đăng nhập" />
+                <span asp-validation-for="TenDangNhap" class="field-error"></span>
 
-<span>✓ Chủ động cập nhật thông tin tìm việc</span>
+                <label asp-for="Email"></label>
+                <input asp-for="Email" placeholder="Nhập địa chỉ email" />
+                <span asp-validation-for="Email" class="field-error"></span>
 
-</div>
+                <label asp-for="MatKhau"></label>
+                <input asp-for="MatKhau" placeholder="Tối thiểu 6 ký tự" />
+                <span asp-validation-for="MatKhau" class="field-error"></span>
 
-</div>
+                <label asp-for="XacNhanMatKhau"></label>
+                <input asp-for="XacNhanMatKhau" placeholder="Nhập lại mật khẩu" />
+                <span asp-validation-for="XacNhanMatKhau" class="field-error"></span>
 
-<div class="auth-form-wrap">
-<div class="form-heading">
-<span class="brand-mark">W</span>
+                <label class="check terms">
+                    <input asp-for="DongYDieuKhoan" /> Tôi đã đọc và đồng ý với Điều khoản sử dụng.
+                </label>
+                <span asp-validation-for="DongYDieuKhoan" class="field-error"></span>
 
-<h2>Tạo tài khoản</h2>
-
-<p>Điền thông tin để bắt đầu</p>
-
-</div>
-
-<form>
-<label for="fullname">Họ và tên</label>
-<input id="fullname" type="text" placeholder="Nhập họ và tên" />
-<label for="register-email">Email</label>
-<input id="register-email" type="email" placeholder="you@example.com" />
-<label for="register-password">Mật khẩu</label>
-<input id="register-password" type="password" placeholder="Tối thiểu 6 ký tự" />
-<label class="check terms">
-<input type="checkbox" /> Tôi đồng ý với điều khoản sử dụng</label>
-<button class="button form-button" type="submit">Tạo tài khoản</button>
-
-<p class="form-switch">Đã có tài khoản? <a asp-action="Login">Đăng nhập</a>
-
-</p>
-
-</form>
-
-</div>
-
-</div>
-
+                <button class="button form-button" type="submit">Tạo tài khoản</button>
+                <p class="form-switch">Đã có tài khoản? <a asp-action="Login">Đăng nhập</a></p>
+            </form>
+        </div>
+    </div>
 </section>
 
