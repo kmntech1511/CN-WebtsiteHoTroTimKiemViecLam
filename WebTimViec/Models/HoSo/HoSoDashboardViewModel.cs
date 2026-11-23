@@ -20,5 +20,6 @@ public class HoSoSummaryViewModel
     public string? DiaDiemMongMuon { get; set; }
     public string? HinhThucLamViec { get; set; }
     public bool TrangThai { get; set; }
+    public DateTime NgayTao { get; set; }
     public DateTime NgayCapNhat { get; set; }
 }

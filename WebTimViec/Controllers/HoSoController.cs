@@ -48,6 +48,66 @@ public class HoSoController(AppDbContext context) : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> Edit(int id)
+    {
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var resume = await context.HoSoTimViecs
+            .FirstOrDefaultAsync(x => x.MaHoSo == id && x.MaNguoiDung == userId);
+
+        if (resume is null)
+        {
+            return NotFound();
+        }
+
+        return View(new CreateHoSoViewModel
+        {
+            MaHoSo = resume.MaHoSo,
+            TieuDe = resume.TieuDe,
+            GioiThieuBanThan = resume.GioiThieuBanThan,
+            MucTieuNgheNghiep = resume.MucTieuNgheNghiep,
+            HinhThucLamViec = resume.HinhThucLamViec,
+            MucLuongMongMuon = resume.MucLuongMongMuon,
+            DiaDiemMongMuon = resume.DiaDiemMongMuon
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Edit(int id, CreateHoSoViewModel model)
+    {
+        if (id != model.MaHoSo)
+        {
+            return BadRequest();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var resume = await context.HoSoTimViecs
+            .FirstOrDefaultAsync(x => x.MaHoSo == id && x.MaNguoiDung == userId);
+
+        if (resume is null)
+        {
+            return NotFound();
+        }
+
+        resume.TieuDe = model.TieuDe.Trim();
+        resume.GioiThieuBanThan = model.GioiThieuBanThan?.Trim();
+        resume.MucTieuNgheNghiep = model.MucTieuNgheNghiep?.Trim();
+        resume.HinhThucLamViec = model.HinhThucLamViec?.Trim();
+        resume.MucLuongMongMuon = model.MucLuongMongMuon;
+        resume.DiaDiemMongMuon = model.DiaDiemMongMuon?.Trim();
+        resume.NgayCapNhat = DateTime.Now;
+
+        await context.SaveChangesAsync();
+        TempData["SuccessMessage"] = "Cập nhật hồ sơ thành công.";
+        return RedirectToAction(nameof(Index));
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Index()
     {
         int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -86,11 +146,152 @@ public class HoSoController(AppDbContext context) : Controller
                     DiaDiemMongMuon = x.DiaDiemMongMuon,
                     HinhThucLamViec = x.HinhThucLamViec,
                     TrangThai = x.TrangThai,
+                    NgayTao = x.NgayTao,
                     NgayCapNhat = x.NgayCapNhat ?? x.NgayTao
                 })
                 .ToList()
         };
 
         return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Experiences(int id)
+    {
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var resume = await context.HoSoTimViecs
+            .Include(x => x.KinhNghiemLamViecs)
+            .FirstOrDefaultAsync(x => x.MaHoSo == id && x.MaNguoiDung == userId);
+
+        if (resume is null)
+        {
+            return NotFound();
+        }
+
+        ViewBag.ResumeTitle = resume.TieuDe;
+        ViewBag.ResumeId = resume.MaHoSo;
+        return View(resume.KinhNghiemLamViecs.OrderByDescending(x => x.TuNgay).ToList());
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AddExperience(int id)
+    {
+        if (!await OwnsResume(id))
+        {
+            return NotFound();
+        }
+
+        return View(new KinhNghiemViewModel { MaHoSo = id });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddExperience(KinhNghiemViewModel model)
+    {
+        if (model.DenNgay.HasValue && model.DenNgay < model.TuNgay)
+        {
+            ModelState.AddModelError(nameof(model.DenNgay), "Ngày kết thúc phải sau ngày bắt đầu.");
+        }
+
+        if (!ModelState.IsValid || !await OwnsResume(model.MaHoSo))
+        {
+            return View(model);
+        }
+
+        context.KinhNghiemLamViecs.Add(new Models.Entities.KinhNghiemLamViec
+        {
+            MaHoSo = model.MaHoSo,
+            TenCongTy = model.TenCongTy.Trim(),
+            ChucDanh = model.ChucDanh.Trim(),
+            DiaDiemLamViec = model.DiaDiemLamViec?.Trim(),
+            TuNgay = model.TuNgay,
+            DenNgay = model.DenNgay,
+            MoTaCongViec = model.MoTaCongViec?.Trim()
+        });
+
+        await context.SaveChangesAsync();
+        return RedirectToAction(nameof(Experiences), new { id = model.MaHoSo });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> EditExperience(int id)
+    {
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var experience = await context.KinhNghiemLamViecs
+            .FirstOrDefaultAsync(x => x.MaKinhNghiem == id && x.MaHoSoNavigation.MaNguoiDung == userId);
+
+        if (experience is null)
+        {
+            return NotFound();
+        }
+
+        return View(new KinhNghiemViewModel
+        {
+            MaKinhNghiem = experience.MaKinhNghiem,
+            MaHoSo = experience.MaHoSo,
+            TenCongTy = experience.TenCongTy,
+            ChucDanh = experience.ChucDanh,
+            DiaDiemLamViec = experience.DiaDiemLamViec,
+            TuNgay = experience.TuNgay,
+            DenNgay = experience.DenNgay,
+            MoTaCongViec = experience.MoTaCongViec
+        });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> EditExperience(KinhNghiemViewModel model)
+    {
+        if (model.DenNgay.HasValue && model.DenNgay < model.TuNgay)
+        {
+            ModelState.AddModelError(nameof(model.DenNgay), "Ngày kết thúc phải sau ngày bắt đầu.");
+        }
+
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var experience = await context.KinhNghiemLamViecs
+            .FirstOrDefaultAsync(x => x.MaKinhNghiem == model.MaKinhNghiem && x.MaHoSoNavigation.MaNguoiDung == userId);
+
+        if (experience is null)
+        {
+            return NotFound();
+        }
+
+        if (!ModelState.IsValid)
+        {
+            return View(model);
+        }
+
+        experience.TenCongTy = model.TenCongTy.Trim();
+        experience.ChucDanh = model.ChucDanh.Trim();
+        experience.DiaDiemLamViec = model.DiaDiemLamViec?.Trim();
+        experience.TuNgay = model.TuNgay;
+        experience.DenNgay = model.DenNgay;
+        experience.MoTaCongViec = model.MoTaCongViec?.Trim();
+        await context.SaveChangesAsync();
+        return RedirectToAction(nameof(Experiences), new { id = experience.MaHoSo });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteExperience(int id, int resumeId)
+    {
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var experience = await context.KinhNghiemLamViecs
+            .FirstOrDefaultAsync(x => x.MaKinhNghiem == id && x.MaHoSo == resumeId && x.MaHoSoNavigation.MaNguoiDung == userId);
+
+        if (experience is null)
+        {
+            return NotFound();
+        }
+
+        context.KinhNghiemLamViecs.Remove(experience);
+        await context.SaveChangesAsync();
+        return RedirectToAction(nameof(Experiences), new { id = resumeId });
+    }
+
+    private async Task<bool> OwnsResume(int resumeId)
+    {
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        return await context.HoSoTimViecs.AnyAsync(x => x.MaHoSo == resumeId && x.MaNguoiDung == userId);
     }
 }

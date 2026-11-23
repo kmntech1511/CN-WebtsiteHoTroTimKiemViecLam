@@ -1,0 +1,74 @@
+@model WebTimViec.Models.HoSo.CreateHoSoViewModel
+@{
+    ViewData["Title"] = "Chỉnh sửa hồ sơ";
+}
+
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+
+<section class="profile-page">
+    <div class="container form-page-container">
+        <div class="profile-heading">
+            <div>
+                <span class="eyebrow">HỒ SƠ TÌM VIỆC</span>
+                <h1>Chỉnh sửa hồ sơ</h1>
+                <p>Cập nhật thông tin để hồ sơ luôn chính xác và nổi bật.</p>
+            </div>
+            <a class="outline-button" asp-action="Index">← Quay lại hồ sơ</a>
+        </div>
+
+        <div class="resume-form-card">
+            <form asp-action="Edit" asp-route-id="@Model.MaHoSo" method="post" class="resume-form">
+                <input asp-for="MaHoSo" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+
+                <div class="form-section-title">
+                    <h2>Thông tin cơ bản</h2>
+                    <p>Những thông tin đầu tiên nhà tuyển dụng sẽ nhìn thấy.</p>
+                </div>
+
+                <label asp-for="TieuDe"></label>
+                <input asp-for="TieuDe" placeholder="Ví dụ: Nhân viên công nghệ thông tin" />
+                <span asp-validation-for="TieuDe" class="field-error"></span>
+
+                <div class="form-two-columns">
+                    <div>
+                        <label asp-for="HinhThucLamViec"></label>
+                        <select asp-for="HinhThucLamViec">
+                            <option value="">-- Chọn hình thức --</option>
+                            <option>Toàn thời gian</option>
+                            <option>Bán thời gian</option>
+                            <option>Làm việc từ xa</option>
+                            <option>Thực tập</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label asp-for="DiaDiemMongMuon"></label>
+                        <input asp-for="DiaDiemMongMuon" placeholder="Ví dụ: Thành phố Hồ Chí Minh" />
+                    </div>
+                </div>
+
+                <div class="form-two-columns">
+                    <div>
+                        <label asp-for="MucLuongMongMuon"></label>
+                        <input asp-for="MucLuongMongMuon" type="number" min="0" step="100000" placeholder="Ví dụ: 10000000" />
+                        <span asp-validation-for="MucLuongMongMuon" class="field-error"></span>
+                    </div>
+                    <div class="form-hint">Bạn có thể để trống mức lương nếu chưa xác định.</div>
+                </div>
+
+                <label asp-for="GioiThieuBanThan"></label>
+                <textarea asp-for="GioiThieuBanThan" rows="5" placeholder="Viết ngắn gọn về bản thân, thế mạnh và kinh nghiệm của bạn..."></textarea>
+                <span asp-validation-for="GioiThieuBanThan" class="field-error"></span>
+
+                <label asp-for="MucTieuNgheNghiep"></label>
+                <textarea asp-for="MucTieuNgheNghiep" rows="5" placeholder="Bạn đang hướng đến công việc và môi trường như thế nào?"></textarea>
+                <span asp-validation-for="MucTieuNgheNghiep" class="field-error"></span>
+
+                <div class="form-actions">
+                    <a class="outline-button" asp-action="Index">Hủy</a>
+                    <button class="button" type="submit">Cập nhật hồ sơ</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</section>

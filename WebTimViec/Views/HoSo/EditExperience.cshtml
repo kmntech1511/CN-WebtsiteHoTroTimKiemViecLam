@@ -1,0 +1,13 @@
+@model WebTimViec.Models.HoSo.KinhNghiemViewModel
+@{
+    ViewData["Title"] = "Sửa kinh nghiệm";
+}
+
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+
+<section class="profile-page">
+    <div class="container form-page-container">
+        <div class="profile-heading"><div><span class="eyebrow">HỒ SƠ TÌM VIỆC</span><h1>Sửa kinh nghiệm</h1><p>Cập nhật thông tin công việc của bạn.</p></div><a class="outline-button" asp-action="Experiences" asp-route-id="@Model.MaHoSo">← Quay lại</a></div>
+        <partial name="_ExperienceForm" model="Model" />
+    </div>
+</section>

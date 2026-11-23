@@ -1,0 +1,22 @@
+@model WebTimViec.Models.HoSo.KinhNghiemViewModel
+<div class="resume-form-card">
+    <form asp-action="@(Model.MaKinhNghiem == 0 ? "AddExperience" : "EditExperience")" method="post" class="resume-form">
+        <input asp-for="MaHoSo" type="hidden" />
+        <input asp-for="MaKinhNghiem" type="hidden" />
+        <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+        <div class="form-two-columns">
+            <div><label asp-for="ChucDanh"></label><input asp-for="ChucDanh" placeholder="Ví dụ: Nhân viên kinh doanh" /><span asp-validation-for="ChucDanh" class="field-error"></span></div>
+            <div><label asp-for="TenCongTy"></label><input asp-for="TenCongTy" placeholder="Ví dụ: Công ty ABC" /><span asp-validation-for="TenCongTy" class="field-error"></span></div>
+        </div>
+        <label asp-for="DiaDiemLamViec"></label>
+        <input asp-for="DiaDiemLamViec" placeholder="Ví dụ: Thành phố Hồ Chí Minh" />
+        <div class="form-two-columns">
+            <div><label asp-for="TuNgay"></label><input asp-for="TuNgay" type="date" /><span asp-validation-for="TuNgay" class="field-error"></span></div>
+            <div><label asp-for="DenNgay"></label><input asp-for="DenNgay" type="date" /><span asp-validation-for="DenNgay" class="field-error"></span></div>
+        </div>
+        <label asp-for="MoTaCongViec"></label>
+        <textarea asp-for="MoTaCongViec" rows="6" placeholder="Mô tả vai trò, công việc và thành tựu của bạn..."></textarea>
+        <span asp-validation-for="MoTaCongViec" class="field-error"></span>
+        <div class="form-actions"><a class="outline-button" asp-action="Experiences" asp-route-id="@Model.MaHoSo">Hủy</a><button class="button" type="submit">Lưu kinh nghiệm</button></div>
+    </form>
+</div>

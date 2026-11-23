@@ -4,6 +4,8 @@ namespace WebTimViec.Models.HoSo;
 
 public class CreateHoSoViewModel
 {
+    public int MaHoSo { get; set; }
+
     [Required(ErrorMessage = "Vui lòng nhập tiêu đề hồ sơ.")]
     [StringLength(200, ErrorMessage = "Tiêu đề không được vượt quá 200 ký tự.")]
     [Display(Name = "Tiêu đề hồ sơ")]

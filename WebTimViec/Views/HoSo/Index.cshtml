@@ -24,7 +24,10 @@
                     <p>@Model.Email</p>
                     <small>@(Model.Sdt ?? "Chưa cập nhật số điện thoại")</small>
                 </div>
-                <a class="outline-button" href="#">Chỉnh sửa</a>
+                @if (Model.HoSos.Count > 0)
+                {
+                    <a class="outline-button" asp-action="Edit" asp-route-id="@Model.HoSos.First().MaHoSo">Chỉnh sửa</a>
+                }
             </div>
             <div class="completion-card">
                 <div class="completion-top"><strong>Mức độ hoàn thiện</strong><b>@(Model.SoHoSo > 0 ? "60%" : "20%")</b></div>
@@ -50,7 +53,21 @@
             <div class="resume-list">
                 @foreach (var resume in Model.HoSos)
                 {
-                    <article class="resume-card"><div><span class="resume-status">@(resume.TrangThai ? "Đang hiển thị" : "Bản nháp")</span><h3>@resume.TieuDe</h3><p>@(resume.DiaDiemMongMuon ?? "Chưa cập nhật địa điểm") · @(resume.HinhThucLamViec ?? "Chưa cập nhật hình thức")</p></div><a class="outline-button" href="#">Xem chi tiết</a></article>
+                    <article class="resume-card">
+                        <div>
+                            <span class="resume-status">@(resume.TrangThai ? "Đang hiển thị" : "Bản nháp")</span>
+                            <h3>@resume.TieuDe</h3>
+                            <p>@(resume.DiaDiemMongMuon ?? "Chưa cập nhật địa điểm") · @(resume.HinhThucLamViec ?? "Chưa cập nhật hình thức")</p>
+                            <div class="resume-dates">
+                                <span>Ngày tạo: @resume.NgayTao.ToString("dd/MM/yyyy HH:mm")</span>
+                                <span>Cập nhật: @resume.NgayCapNhat.ToString("dd/MM/yyyy HH:mm")</span>
+                            </div>
+                        </div>
+                        <div class="experience-actions">
+                            <a class="outline-button" asp-action="Experiences" asp-route-id="@resume.MaHoSo">Kinh nghiệm</a>
+                            <a class="outline-button" asp-action="Edit" asp-route-id="@resume.MaHoSo">Chỉnh sửa</a>
+                        </div>
+                    </article>
                 }
             </div>
         }

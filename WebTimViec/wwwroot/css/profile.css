@@ -170,6 +170,14 @@
 .resume-card h3 {
   margin:10px 0 3px
 }
+.resume-dates {
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:10px;
+  color:var(--muted);
+  font-size:11px
+}
 .outline-button {
   border:1px solid #cbd8ed;
   border-radius:7px;
@@ -331,5 +339,96 @@
 
   .form-two-columns .form-hint {
     padding-bottom: 0;
+  }
+}
+
+.form-actions-top,
+.experience-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+}
+
+.experience-list {
+  display: grid;
+  gap: 14px;
+}
+
+.experience-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 18px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 24px;
+}
+
+.experience-icon {
+  display: grid;
+  flex: 0 0 44px;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: #dbeafe;
+  color: var(--primary);
+  font-size: 20px;
+}
+
+.experience-content {
+  flex: 1;
+}
+
+.experience-content h2 {
+  margin: 0 0 3px;
+  font-size: 19px;
+}
+
+.experience-content strong {
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.experience-content p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
+.experience-description {
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.7;
+  margin-top: 14px;
+  padding-top: 13px;
+  white-space: pre-line;
+}
+
+.delete-button {
+  border: 0;
+  background: transparent;
+  color: #dc2626;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  padding: 8px 6px;
+}
+
+.delete-button:hover {
+  color: #991b1b;
+}
+
+@media(max-width:700px) {
+  .form-actions-top,
+  .experience-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .experience-actions {
+    width: 100%;
   }
 }
