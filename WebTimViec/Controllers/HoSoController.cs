@@ -205,6 +205,84 @@ public class HoSoController(AppDbContext context) : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> Degrees(int id)
+    {
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var resume = await context.HoSoTimViecs
+            .Include(x => x.CoBangCaps)
+                .ThenInclude(x => x.MaBangCapNavigation)
+            .FirstOrDefaultAsync(x => x.MaHoSo == id && x.MaNguoiDung == userId);
+
+        if (resume is null)
+        {
+            return NotFound();
+        }
+
+        ViewBag.ResumeTitle = resume.TieuDe;
+        ViewBag.ResumeId = resume.MaHoSo;
+        var model = resume.CoBangCaps
+            .Select(x => new BangCapItemViewModel
+            {
+                MaBangCap = x.MaBangCap,
+                TenBangCap = x.MaBangCapNavigation.TenBangCap,
+                CapDo = x.MaBangCapNavigation.CapDo,
+                TruongDaoTao = x.TruongDaoTao,
+                ChuyenNganh = x.ChuyenNganh,
+                NamTotNghiep = x.NamTotNghiep
+            })
+            .OrderBy(x => x.TenBangCap)
+            .ToList();
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AddDegree(int id)
+    {
+        if (!await OwnsResume(id)) return NotFound();
+        ViewBag.Degrees = await context.BangCaps.Where(x => x.TrangThai).OrderBy(x => x.TenBangCap).ToListAsync();
+        return View(new BangCapViewModel { MaHoSo = id });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddDegree(BangCapViewModel model)
+    {
+        if (!await OwnsResume(model.MaHoSo)) return NotFound();
+        if (await context.CoBangCaps.AnyAsync(x => x.MaHoSo == model.MaHoSo && x.MaBangCap == model.MaBangCap))
+            ModelState.AddModelError(nameof(model.MaBangCap), "Bằng cấp này đã có trong hồ sơ.");
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Degrees = await context.BangCaps.Where(x => x.TrangThai).OrderBy(x => x.TenBangCap).ToListAsync();
+            return View(model);
+        }
+
+        context.CoBangCaps.Add(new Models.Entities.CoBangCap
+        {
+            MaHoSo = model.MaHoSo,
+            MaBangCap = model.MaBangCap,
+            TruongDaoTao = model.TruongDaoTao?.Trim(),
+            ChuyenNganh = model.ChuyenNganh?.Trim(),
+            NamTotNghiep = model.NamTotNghiep
+        });
+        await context.SaveChangesAsync();
+        return RedirectToAction(nameof(Degrees), new { id = model.MaHoSo });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteDegree(int id, int resumeId)
+    {
+        if (!await OwnsResume(resumeId)) return NotFound();
+        var degree = await context.CoBangCaps.FirstOrDefaultAsync(x => x.MaHoSo == resumeId && x.MaBangCap == id);
+        if (degree is null) return NotFound();
+        context.CoBangCaps.Remove(degree);
+        await context.SaveChangesAsync();
+        return RedirectToAction(nameof(Degrees), new { id = resumeId });
+    }
+
+    [HttpGet]
     public async Task<IActionResult> AddSkill(int id)
     {
         if (!await OwnsResume(id))

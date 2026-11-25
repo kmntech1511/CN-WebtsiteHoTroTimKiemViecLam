@@ -1,0 +1,42 @@
+@model WebTimViec.Models.HoSo.BangCapViewModel
+@{ ViewData["Title"] = "Thêm bằng cấp"; }
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+<section class="profile-page">
+<div class="container form-page-container">
+<div class="profile-heading">
+<div>
+<span class="eyebrow">HỒ SƠ TÌM VIỆC</span>
+<h1>Thêm bằng cấp</h1>
+<p>Bổ sung thông tin đào tạo của bạn.</p>
+</div>
+<a class="outline-button" asp-action="Degrees" asp-route-id="@Model.MaHoSo">← Quay lại</a>
+</div>
+<div class="resume-form-card">
+<form asp-action="AddDegree" method="post" class="resume-form">
+<input asp-for="MaHoSo" type="hidden" />
+<div asp-validation-summary="ModelOnly" class="validation-summary">
+</div>
+<label asp-for="MaBangCap">Bằng cấp</label>
+<select asp-for="MaBangCap">
+<option value="">-- Chọn bằng cấp --</option>@foreach(var degree in (IEnumerable<WebTimViec.Models.Entities.BangCap>)ViewBag.Degrees){<option value="@degree.MaBangCap">@degree.TenBangCap@(string.IsNullOrWhiteSpace(degree.CapDo)?"":$" - {degree.CapDo}")</option>}</select>
+<span asp-validation-for="MaBangCap" class="field-error">
+</span>
+<label asp-for="TruongDaoTao">
+</label>
+<input asp-for="TruongDaoTao" placeholder="Ví dụ: Đại học Trà Vinh" />
+<label asp-for="ChuyenNganh">
+</label>
+<input asp-for="ChuyenNganh" placeholder="Ví dụ: Công nghệ thông tin" />
+<label asp-for="NamTotNghiep">
+</label>
+<input asp-for="NamTotNghiep" type="number" min="1950" max="2100" placeholder="Ví dụ: 2026" />
+<span asp-validation-for="NamTotNghiep" class="field-error">
+</span>
+<div class="form-actions">
+<a class="outline-button" asp-action="Degrees" asp-route-id="@Model.MaHoSo">Hủy</a>
+<button class="button" type="submit">Lưu bằng cấp</button>
+</div>
+</form>
+</div>
+</div>
+</section>

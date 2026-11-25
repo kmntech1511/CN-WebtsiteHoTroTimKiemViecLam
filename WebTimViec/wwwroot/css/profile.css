@@ -474,6 +474,53 @@
   font-size: 13px;
 }
 
+.credential-list {
+  display: grid;
+  gap: 12px;
+}
+
+.credential-card {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff;
+  padding: 20px 22px;
+}
+
+.credential-icon {
+  display: grid;
+  flex: 0 0 42px;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 10px;
+  background: #f3e8ff;
+  color: #9333ea;
+  font-size: 19px;
+}
+
+.credential-content {
+  flex: 1;
+}
+
+.credential-content h2 {
+  margin: 0 0 3px;
+  font-size: 17px;
+}
+
+.credential-content strong {
+  color: var(--primary);
+  font-size: 14px;
+}
+
+.credential-content p {
+  color: var(--muted);
+  font-size: 13px;
+  margin: 7px 0 0;
+}
+
 @media(max-width:700px) {
   .skill-card {
     align-items: flex-start;
@@ -484,6 +531,10 @@
     min-width: auto;
     text-align: left;
     width: calc(100% - 57px);
+  }
+
+  .credential-card {
+    align-items: flex-start;
   }
 }
 
