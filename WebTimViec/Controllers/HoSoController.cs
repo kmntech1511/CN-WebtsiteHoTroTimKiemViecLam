@@ -174,6 +174,110 @@ public class HoSoController(AppDbContext context) : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> Skills(int id)
+    {
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var resume = await context.HoSoTimViecs
+            .Include(x => x.CoKyNangs)
+                .ThenInclude(x => x.MaKyNangNavigation)
+            .FirstOrDefaultAsync(x => x.MaHoSo == id && x.MaNguoiDung == userId);
+
+        if (resume is null)
+        {
+            return NotFound();
+        }
+
+        ViewBag.ResumeTitle = resume.TieuDe;
+        ViewBag.ResumeId = resume.MaHoSo;
+        var model = resume.CoKyNangs
+            .Select(x => new KyNangItemViewModel
+            {
+                MaKyNang = x.MaKyNang,
+                TenKyNang = x.MaKyNangNavigation.TenKyNang,
+                LoaiKyNang = x.MaKyNangNavigation.LoaiKyNang,
+                MucDo = x.MucDo,
+                SoNamSuDung = x.SoNamSuDung
+            })
+            .OrderBy(x => x.TenKyNang)
+            .ToList();
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AddSkill(int id)
+    {
+        if (!await OwnsResume(id))
+        {
+            return NotFound();
+        }
+
+        ViewBag.Skills = await context.KyNangs
+            .Where(x => x.TrangThai)
+            .OrderBy(x => x.TenKyNang)
+            .ToListAsync();
+        return View(new KyNangViewModel { MaHoSo = id });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddSkill(KyNangViewModel model)
+    {
+        if (!await OwnsResume(model.MaHoSo))
+        {
+            return NotFound();
+        }
+
+        bool alreadyAdded = await context.CoKyNangs
+            .AnyAsync(x => x.MaHoSo == model.MaHoSo && x.MaKyNang == model.MaKyNang);
+        if (alreadyAdded)
+        {
+            ModelState.AddModelError(nameof(model.MaKyNang), "Kỹ năng này đã có trong hồ sơ.");
+        }
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Skills = await context.KyNangs
+                .Where(x => x.TrangThai)
+                .OrderBy(x => x.TenKyNang)
+                .ToListAsync();
+            return View(model);
+        }
+
+        context.CoKyNangs.Add(new Models.Entities.CoKyNang
+        {
+            MaHoSo = model.MaHoSo,
+            MaKyNang = model.MaKyNang,
+            MucDo = model.MucDo,
+            SoNamSuDung = model.SoNamSuDung
+        });
+
+        await context.SaveChangesAsync();
+        return RedirectToAction(nameof(Skills), new { id = model.MaHoSo });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteSkill(int id, int resumeId)
+    {
+        if (!await OwnsResume(resumeId))
+        {
+            return NotFound();
+        }
+
+        var skill = await context.CoKyNangs
+            .FirstOrDefaultAsync(x => x.MaHoSo == resumeId && x.MaKyNang == id);
+        if (skill is null)
+        {
+            return NotFound();
+        }
+
+        context.CoKyNangs.Remove(skill);
+        await context.SaveChangesAsync();
+        return RedirectToAction(nameof(Skills), new { id = resumeId });
+    }
+
+    [HttpGet]
     public async Task<IActionResult> AddExperience(int id)
     {
         if (!await OwnsResume(id))

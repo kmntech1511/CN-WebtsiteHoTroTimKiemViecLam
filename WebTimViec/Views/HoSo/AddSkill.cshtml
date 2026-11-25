@@ -1,0 +1,43 @@
+@model WebTimViec.Models.HoSo.KyNangViewModel
+@{
+    ViewData["Title"] = "Thêm kỹ năng";
+}
+
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+
+<section class="profile-page">
+    <div class="container form-page-container">
+        <div class="profile-heading">
+            <div><span class="eyebrow">HỒ SƠ TÌM VIỆC</span><h1>Thêm kỹ năng</h1><p>Bổ sung kỹ năng vào hồ sơ của bạn.</p></div>
+            <a class="outline-button" asp-action="Skills" asp-route-id="@Model.MaHoSo">← Quay lại</a>
+        </div>
+        <div class="resume-form-card">
+            <form asp-action="AddSkill" method="post" class="resume-form">
+                <input asp-for="MaHoSo" type="hidden" />
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+                <label asp-for="MaKyNang">Kỹ năng</label>
+                <select asp-for="MaKyNang">
+                    <option value="">-- Chọn kỹ năng --</option>
+                    @foreach (var skill in (IEnumerable<WebTimViec.Models.Entities.KyNang>)ViewBag.Skills)
+                    {
+                        <option value="@skill.MaKyNang">@skill.TenKyNang@(string.IsNullOrWhiteSpace(skill.LoaiKyNang) ? "" : $" - {skill.LoaiKyNang}")</option>
+                    }
+                </select>
+                <span asp-validation-for="MaKyNang" class="field-error"></span>
+                <label asp-for="MucDo"></label>
+                <select asp-for="MucDo">
+                    <option value="">-- Chọn mức độ --</option>
+                    <option>Cơ bản</option>
+                    <option>Khá</option>
+                    <option>Tốt</option>
+                    <option>Thành thạo</option>
+                </select>
+                <span asp-validation-for="MucDo" class="field-error"></span>
+                <label asp-for="SoNamSuDung"></label>
+                <input asp-for="SoNamSuDung" type="number" min="0" max="80" step="0.5" placeholder="Ví dụ: 2.5" />
+                <span asp-validation-for="SoNamSuDung" class="field-error"></span>
+                <div class="form-actions"><a class="outline-button" asp-action="Skills" asp-route-id="@Model.MaHoSo">Hủy</a><button class="button" type="submit">Lưu kỹ năng</button></div>
+            </form>
+        </div>
+    </div>
+</section>

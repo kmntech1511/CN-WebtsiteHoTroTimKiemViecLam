@@ -1,0 +1,56 @@
+@model List<WebTimViec.Models.HoSo.KyNangItemViewModel>
+@{
+    ViewData["Title"] = "Kỹ năng";
+}
+
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+
+<section class="profile-page">
+    <div class="container form-page-container">
+        <div class="profile-heading">
+            <div>
+                <span class="eyebrow">HỒ SƠ TÌM VIỆC</span>
+                <h1>Kỹ năng</h1>
+                <p>@ViewBag.ResumeTitle</p>
+            </div>
+            <div class="form-actions-top">
+                <a class="outline-button" asp-action="Index">← Hồ sơ của tôi</a>
+                <a class="button" asp-action="AddSkill" asp-route-id="@ViewBag.ResumeId">+ Thêm kỹ năng</a>
+            </div>
+        </div>
+
+        @if (Model.Count == 0)
+        {
+            <div class="empty-profile">
+                <div class="empty-icon">✦</div>
+                <h3>Chưa có kỹ năng</h3>
+                <p>Thêm các kỹ năng nổi bật để nhà tuyển dụng hiểu hơn về năng lực của bạn.</p>
+                <a class="button" asp-action="AddSkill" asp-route-id="@ViewBag.ResumeId">Thêm kỹ năng đầu tiên</a>
+            </div>
+        }
+        else
+        {
+            <div class="skill-list">
+                @foreach (var skill in Model)
+                {
+                    <article class="skill-card">
+                        <div class="skill-icon">✦</div>
+                        <div class="skill-content">
+                            <h2>@skill.TenKyNang</h2>
+                            <span>@(skill.LoaiKyNang ?? "Kỹ năng chuyên môn")</span>
+                        </div>
+                        <div class="skill-level">
+                            <strong>@(skill.MucDo ?? "Chưa cập nhật")</strong>
+                            <small>@(skill.SoNamSuDung?.ToString("0.#") ?? "0") năm sử dụng</small>
+                        </div>
+                        <form asp-action="DeleteSkill" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa kỹ năng này?');">
+                            <input type="hidden" name="id" value="@skill.MaKyNang" />
+                            <input type="hidden" name="resumeId" value="@ViewBag.ResumeId" />
+                            <button class="delete-button" type="submit">Xóa</button>
+                        </form>
+                    </article>
+                }
+            </div>
+        }
+    </div>
+</section>
