@@ -1,0 +1,35 @@
+@model WebTimViec.Models.HoSo.NganhNgheViewModel
+@{ ViewData["Title"] = "Ngành nghề mong muốn"; }
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+<section class="profile-page">
+<div class="container form-page-container">
+<div class="profile-heading">
+<div>
+<span class="eyebrow">HỒ SƠ TÌM VIỆC</span>
+<h1>Ngành nghề mong muốn</h1>
+<p>@ViewBag.ResumeTitle</p>
+</div>
+<a class="outline-button" asp-action="Index">← Hồ sơ của tôi</a>
+</div>
+<div class="resume-form-card">
+<form asp-action="Industries" method="post" class="resume-form">
+<input asp-for="MaHoSo" type="hidden" />
+<div class="form-section-title">
+<h2>Chọn ngành nghề phù hợp</h2>
+<p>Bạn có thể chọn nhiều ngành nghề để thể hiện định hướng tìm việc.</p>
+</div>
+<div class="industry-grid">@foreach(var item in Model.NganhNghes){<label class="industry-option">
+<input type="checkbox" name="MaNganhDaChon" value="@item.MaNganh" checked="@item.DaChon" />
+<span>
+<strong>@item.TenNganh</strong>
+<small>@item.TenNhomNganh</small>
+</span>
+</label>}</div>
+<div class="form-actions">
+<a class="outline-button" asp-action="Index">Hủy</a>
+<button class="button" type="submit">Lưu ngành nghề</button>
+</div>
+</form>
+</div>
+</div>
+</section>

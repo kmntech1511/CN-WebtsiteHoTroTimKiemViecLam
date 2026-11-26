@@ -156,6 +156,60 @@ public class HoSoController(AppDbContext context) : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> Details(int id)
+    {
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var resume = await context.HoSoTimViecs
+            .Include(x => x.MaNguoiDungNavigation)
+            .Include(x => x.KinhNghiemLamViecs)
+            .Include(x => x.CoKyNangs).ThenInclude(x => x.MaKyNangNavigation)
+            .Include(x => x.CoBangCaps).ThenInclude(x => x.MaBangCapNavigation)
+            .Include(x => x.DatChungChis).ThenInclude(x => x.MaChungChiNavigation)
+            .Include(x => x.MaNganhs)
+            .FirstOrDefaultAsync(x => x.MaHoSo == id && x.MaNguoiDung == userId);
+
+        if (resume is null) return NotFound();
+
+        var model = new HoSoDetailViewModel
+        {
+            MaHoSo = resume.MaHoSo,
+            HoTen = resume.MaNguoiDungNavigation.HoTen,
+            Email = resume.MaNguoiDungNavigation.Email,
+            Sdt = resume.MaNguoiDungNavigation.Sdt,
+            TieuDe = resume.TieuDe,
+            GioiThieuBanThan = resume.GioiThieuBanThan,
+            MucTieuNgheNghiep = resume.MucTieuNgheNghiep,
+            HinhThucLamViec = resume.HinhThucLamViec,
+            MucLuongMongMuon = resume.MucLuongMongMuon,
+            DiaDiemMongMuon = resume.DiaDiemMongMuon,
+            NgayTao = resume.NgayTao,
+            NgayCapNhat = resume.NgayCapNhat,
+            KinhNghiems = resume.KinhNghiemLamViecs.OrderByDescending(x => x.TuNgay).Select(x => new ExperienceDetailViewModel
+            {
+                ChucDanh = x.ChucDanh, TenCongTy = x.TenCongTy, DiaDiem = x.DiaDiemLamViec,
+                TuNgay = x.TuNgay, DenNgay = x.DenNgay, MoTa = x.MoTaCongViec
+            }).ToList(),
+            KyNangs = resume.CoKyNangs.OrderBy(x => x.MaKyNangNavigation.TenKyNang).Select(x => new SkillDetailViewModel
+            {
+                TenKyNang = x.MaKyNangNavigation.TenKyNang, MucDo = x.MucDo, SoNamSuDung = x.SoNamSuDung
+            }).ToList(),
+            BangCaps = resume.CoBangCaps.Select(x => new CredentialDetailViewModel
+            {
+                Ten = x.MaBangCapNavigation.TenBangCap, PhuDe = x.MaBangCapNavigation.CapDo,
+                NoiCap = x.TruongDaoTao, ChuyenNganh = x.ChuyenNganh, NamTotNghiep = x.NamTotNghiep
+            }).ToList(),
+            ChungChis = resume.DatChungChis.Select(x => new CredentialDetailViewModel
+            {
+                Ten = x.MaChungChiNavigation.TenChungChi, PhuDe = x.MaChungChiNavigation.LoaiChungChi,
+                NoiCap = x.NoiCap, NgayCap = x.NgayCap, NgayHetHan = x.NgayHetHan
+            }).ToList(),
+            NganhNghes = resume.MaNganhs.OrderBy(x => x.TenNganh).Select(x => x.TenNganh).ToList()
+        };
+
+        return View(model);
+    }
+
+    [HttpGet]
     public async Task<IActionResult> Experiences(int id)
     {
         int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
@@ -313,6 +367,69 @@ public class HoSoController(AppDbContext context) : Controller
         context.DatChungChis.Remove(certificate);
         await context.SaveChangesAsync();
         return RedirectToAction(nameof(Certificates), new { id = resumeId });
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> Industries(int id)
+    {
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var resume = await context.HoSoTimViecs
+            .Include(x => x.MaNganhs)
+            .FirstOrDefaultAsync(x => x.MaHoSo == id && x.MaNguoiDung == userId);
+
+        if (resume is null) return NotFound();
+
+        var selectedIds = resume.MaNganhs.Select(x => x.MaNganh).ToHashSet();
+        var industries = await context.NganhNghes
+            .Include(x => x.MaNhomNganhNavigation)
+            .Where(x => x.TrangThai)
+            .OrderBy(x => x.MaNhomNganhNavigation.TenNhomNganh)
+            .ThenBy(x => x.TenNganh)
+            .ToListAsync();
+
+        var model = new NganhNgheViewModel
+        {
+            MaHoSo = id,
+            MaNganhDaChon = selectedIds.ToList(),
+            NganhNghes = industries.Select(x => new NganhNgheItemViewModel
+            {
+                MaNganh = x.MaNganh,
+                TenNganh = x.TenNganh,
+                TenNhomNganh = x.MaNhomNganhNavigation.TenNhomNganh,
+                DaChon = selectedIds.Contains(x.MaNganh)
+            }).ToList()
+        };
+
+        ViewBag.ResumeTitle = resume.TieuDe;
+        return View(model);
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> Industries(NganhNgheViewModel model)
+    {
+        if (!await OwnsResume(model.MaHoSo)) return NotFound();
+
+        var resume = await context.HoSoTimViecs
+            .Include(x => x.MaNganhs)
+            .FirstAsync(x => x.MaHoSo == model.MaHoSo);
+        var validIds = await context.NganhNghes
+            .Where(x => x.TrangThai && model.MaNganhDaChon.Contains(x.MaNganh))
+            .Select(x => x.MaNganh)
+            .ToListAsync();
+
+        resume.MaNganhs.Clear();
+        var selectedIndustries = await context.NganhNghes
+            .Where(x => validIds.Contains(x.MaNganh))
+            .ToListAsync();
+        foreach (var industry in selectedIndustries)
+        {
+            resume.MaNganhs.Add(industry);
+        }
+
+        resume.NgayCapNhat = DateTime.Now;
+        await context.SaveChangesAsync();
+        return RedirectToAction(nameof(Industries), new { id = model.MaHoSo });
     }
 
     [HttpGet]

@@ -1,0 +1,75 @@
+@model WebTimViec.Models.HoSo.HoSoDetailViewModel
+@{ ViewData["Title"] = "Chi tiết hồ sơ"; }
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+<section class="profile-page">
+<div class="container detail-container">
+<div class="detail-actions">
+<a class="outline-button" asp-action="Index">← Hồ sơ của tôi</a>
+<a class="button" asp-action="Edit" asp-route-id="@Model.MaHoSo">Chỉnh sửa hồ sơ</a>
+</div>
+<div class="resume-detail-card">
+<header class="resume-detail-header">
+<div class="detail-avatar">@Model.HoTen.FirstOrDefault()</div>
+<div>
+<span class="eyebrow">HỒ SƠ TÌM VIỆC</span>
+<h1>@Model.TieuDe</h1>
+<h2>@Model.HoTen</h2>
+<div class="contact-line">
+<span>✉ @Model.Email</span>@if(!string.IsNullOrWhiteSpace(Model.Sdt)){<span>☎ @Model.Sdt</span>}<span>⌖ @(Model.DiaDiemMongMuon ?? "Chưa cập nhật địa điểm")</span>
+</div>
+</div>
+</header>
+<div class="detail-meta">
+<span>@(Model.HinhThucLamViec ?? "Chưa cập nhật hình thức")</span>@if(Model.MucLuongMongMuon.HasValue){<span>Mức lương mong muốn: @Model.MucLuongMongMuon.Value.ToString("N0") VNĐ</span>}<span>Tạo ngày @Model.NgayTao.ToString("dd/MM/yyyy")</span>
+</div>
+<div class="detail-body">
+<div class="detail-main">@if(!string.IsNullOrWhiteSpace(Model.GioiThieuBanThan)){<section class="detail-section">
+<h3>Giới thiệu bản thân</h3>
+<p class="pre-line">@Model.GioiThieuBanThan</p>
+</section>}@if(!string.IsNullOrWhiteSpace(Model.MucTieuNgheNghiep)){<section class="detail-section">
+<h3>Mục tiêu nghề nghiệp</h3>
+<p class="pre-line">@Model.MucTieuNgheNghiep</p>
+</section>}<section class="detail-section">
+<div class="section-title-row">
+<h3>Kinh nghiệm làm việc</h3>
+<a asp-action="Experiences" asp-route-id="@Model.MaHoSo">Quản lý</a>
+</div>@if(Model.KinhNghiems.Count==0){<p class="muted-text">Chưa cập nhật kinh nghiệm.</p>}else{foreach(var item in Model.KinhNghiems){<div class="detail-item">
+<h4>@item.ChucDanh</h4>
+<strong>@item.TenCongTy</strong>
+<small>@(item.DiaDiem ?? "") · @item.TuNgay.ToString("MM/yyyy") - @(item.DenNgay?.ToString("MM/yyyy") ?? "Hiện tại")</small>@if(!string.IsNullOrWhiteSpace(item.MoTa)){<p class="pre-line">@item.MoTa</p>}</div>}}</section>
+</div>
+<aside class="detail-side">
+<section class="detail-section">
+<div class="section-title-row">
+<h3>Kỹ năng</h3>
+<a asp-action="Skills" asp-route-id="@Model.MaHoSo">Quản lý</a>
+</div>
+<div class="detail-tags">@foreach(var skill in Model.KyNangs){<span>@skill.TenKyNang <small>@skill.MucDo</small>
+</span>}</div>@if(Model.KyNangs.Count==0){<p class="muted-text">Chưa cập nhật kỹ năng.</p>}</section>
+<section class="detail-section">
+<div class="section-title-row">
+<h3>Bằng cấp</h3>
+<a asp-action="Degrees" asp-route-id="@Model.MaHoSo">Quản lý</a>
+</div>@foreach(var item in Model.BangCaps){<div class="compact-item">
+<strong>@item.Ten</strong>
+<span>@item.ChuyenNganh · @item.NamTotNghiep</span>
+</div>}@if(Model.BangCaps.Count==0){<p class="muted-text">Chưa cập nhật bằng cấp.</p>}</section>
+<section class="detail-section">
+<div class="section-title-row">
+<h3>Chứng chỉ</h3>
+<a asp-action="Certificates" asp-route-id="@Model.MaHoSo">Quản lý</a>
+</div>@foreach(var item in Model.ChungChis){<div class="compact-item">
+<strong>@item.Ten</strong>
+<span>@(item.NoiCap ?? "Chưa cập nhật nơi cấp")</span>
+</div>}@if(Model.ChungChis.Count==0){<p class="muted-text">Chưa cập nhật chứng chỉ.</p>}</section>
+<section class="detail-section">
+<div class="section-title-row">
+<h3>Ngành nghề mong muốn</h3>
+<a asp-action="Industries" asp-route-id="@Model.MaHoSo">Quản lý</a>
+</div>
+<div class="detail-tags">@foreach(var industry in Model.NganhNghes){<span>@industry</span>}</div>@if(Model.NganhNghes.Count==0){<p class="muted-text">Chưa cập nhật ngành nghề.</p>}</section>
+</aside>
+</div>
+</div>
+</div>
+</section>
