@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Quản trị WebTimViec</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body>
+    <header class="admin-header">
+        <div class="container admin-nav">
+            <a class="brand" asp-controller="Home" asp-action="Index"><span class="brand-mark">W</span>WebTimViec <small>ADMIN</small></a>
+            <a class="admin-home-link" asp-controller="Home" asp-action="Index">← Về website</a>
+            <div class="admin-user"><span class="profile-avatar">@(User.Identity?.Name?.FirstOrDefault() ?? 'A')</span>@User.Identity?.Name</div>
+        </div>
+    </header>
+    <div class="admin-shell container">
+        <aside class="admin-sidebar">
+            <span class="admin-label">QUẢN LÝ HỆ THỐNG</span>
+            <a class="admin-nav-item" asp-controller="Dashboard" asp-action="Index">Tổng quan</a>
+            <a class="admin-nav-item" href="#">Nhóm ngành</a>
+            <a class="admin-nav-item" href="#">Ngành nghề</a>
+            <a class="admin-nav-item" href="#">Kỹ năng</a>
+            <a class="admin-nav-item" href="#">Bằng cấp</a>
+            <a class="admin-nav-item" href="#">Chứng chỉ</a>
+            <span class="admin-label">THỐNG KÊ</span>
+            <a class="admin-nav-item" href="#">Người tìm việc</a>
+        </aside>
+        <main class="admin-content">@RenderBody()</main>
+    </div>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

@@ -55,6 +55,11 @@ public class AccountController(AppDbContext context) : Controller
         await context.SaveChangesAsync();
         await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme, principal, properties);
 
+        if (user.MaVaiTroNavigation.TenVaiTro == "QuanTri")
+        {
+            return Redirect("/Admin/Dashboard/Index");
+        }
+
         return RedirectToAction("Index", "Home");
     }
 
