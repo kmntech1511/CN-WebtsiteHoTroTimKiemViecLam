@@ -237,6 +237,85 @@ public class HoSoController(AppDbContext context) : Controller
     }
 
     [HttpGet]
+    public async Task<IActionResult> Certificates(int id)
+    {
+        int userId = int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
+        var resume = await context.HoSoTimViecs
+            .Include(x => x.DatChungChis)
+                .ThenInclude(x => x.MaChungChiNavigation)
+            .FirstOrDefaultAsync(x => x.MaHoSo == id && x.MaNguoiDung == userId);
+
+        if (resume is null) return NotFound();
+
+        ViewBag.ResumeTitle = resume.TieuDe;
+        ViewBag.ResumeId = resume.MaHoSo;
+        var model = resume.DatChungChis
+            .Select(x => new ChungChiItemViewModel
+            {
+                MaChungChi = x.MaChungChi,
+                TenChungChi = x.MaChungChiNavigation.TenChungChi,
+                LoaiChungChi = x.MaChungChiNavigation.LoaiChungChi,
+                SoHieu = x.SoHieu,
+                NgayCap = x.NgayCap,
+                NgayHetHan = x.NgayHetHan,
+                NoiCap = x.NoiCap
+            })
+            .OrderBy(x => x.TenChungChi)
+            .ToList();
+
+        return View(model);
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> AddCertificate(int id)
+    {
+        if (!await OwnsResume(id)) return NotFound();
+        ViewBag.Certificates = await context.ChungChis.Where(x => x.TrangThai).OrderBy(x => x.TenChungChi).ToListAsync();
+        return View(new ChungChiViewModel { MaHoSo = id });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> AddCertificate(ChungChiViewModel model)
+    {
+        if (!await OwnsResume(model.MaHoSo)) return NotFound();
+        if (model.NgayCap.HasValue && model.NgayHetHan.HasValue && model.NgayHetHan < model.NgayCap)
+            ModelState.AddModelError(nameof(model.NgayHetHan), "Ngày hết hạn phải sau ngày cấp.");
+        if (await context.DatChungChis.AnyAsync(x => x.MaHoSo == model.MaHoSo && x.MaChungChi == model.MaChungChi))
+            ModelState.AddModelError(nameof(model.MaChungChi), "Chứng chỉ này đã có trong hồ sơ.");
+
+        if (!ModelState.IsValid)
+        {
+            ViewBag.Certificates = await context.ChungChis.Where(x => x.TrangThai).OrderBy(x => x.TenChungChi).ToListAsync();
+            return View(model);
+        }
+
+        context.DatChungChis.Add(new Models.Entities.DatChungChi
+        {
+            MaHoSo = model.MaHoSo,
+            MaChungChi = model.MaChungChi,
+            SoHieu = model.SoHieu?.Trim(),
+            NgayCap = model.NgayCap,
+            NgayHetHan = model.NgayHetHan,
+            NoiCap = model.NoiCap?.Trim()
+        });
+        await context.SaveChangesAsync();
+        return RedirectToAction(nameof(Certificates), new { id = model.MaHoSo });
+    }
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> DeleteCertificate(int id, int resumeId)
+    {
+        if (!await OwnsResume(resumeId)) return NotFound();
+        var certificate = await context.DatChungChis.FirstOrDefaultAsync(x => x.MaHoSo == resumeId && x.MaChungChi == id);
+        if (certificate is null) return NotFound();
+        context.DatChungChis.Remove(certificate);
+        await context.SaveChangesAsync();
+        return RedirectToAction(nameof(Certificates), new { id = resumeId });
+    }
+
+    [HttpGet]
     public async Task<IActionResult> AddDegree(int id)
     {
         if (!await OwnsResume(id)) return NotFound();

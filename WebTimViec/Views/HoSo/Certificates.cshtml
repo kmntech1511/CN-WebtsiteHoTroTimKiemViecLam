@@ -1,0 +1,33 @@
+@model List<WebTimViec.Models.HoSo.ChungChiItemViewModel>
+@{ ViewData["Title"] = "Chứng chỉ"; }
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+<section class="profile-page">
+<div class="container form-page-container">
+<div class="profile-heading">
+<div>
+<span class="eyebrow">HỒ SƠ TÌM VIỆC</span>
+<h1>Chứng chỉ</h1>
+<p>@ViewBag.ResumeTitle</p>
+</div>
+<div class="form-actions-top">
+<a class="outline-button" asp-action="Index">← Hồ sơ của tôi</a>
+<a class="button" asp-action="AddCertificate" asp-route-id="@ViewBag.ResumeId">+ Thêm chứng chỉ</a>
+</div>
+</div>@if(Model.Count==0){<div class="empty-profile">
+<div class="empty-icon">▧</div>
+<h3>Chưa có chứng chỉ</h3>
+<p>Thêm chứng chỉ để thể hiện rõ hơn chuyên môn và năng lực của bạn.</p>
+<a class="button" asp-action="AddCertificate" asp-route-id="@ViewBag.ResumeId">Thêm chứng chỉ đầu tiên</a>
+</div>}else{<div class="credential-list">@foreach(var item in Model){<article class="credential-card">
+<div class="credential-icon certificate-icon">▧</div>
+<div class="credential-content">
+<h2>@item.TenChungChi</h2>
+<strong>@(item.LoaiChungChi ?? "Chứng chỉ chuyên môn")</strong>
+<p>@(item.NoiCap ?? "Chưa cập nhật nơi cấp") · @(item.NgayCap?.ToString("dd/MM/yyyy") ?? "Chưa cập nhật ngày cấp")@(item.NgayHetHan.HasValue ? $" · Hết hạn {item.NgayHetHan:dd/MM/yyyy}" : "")</p>@if(!string.IsNullOrWhiteSpace(item.SoHieu)){<small>Số hiệu: @item.SoHieu</small>}</div>
+<form asp-action="DeleteCertificate" method="post" onsubmit="return confirm('Bạn có chắc muốn xóa chứng chỉ này?');">
+<input type="hidden" name="id" value="@item.MaChungChi" />
+<input type="hidden" name="resumeId" value="@ViewBag.ResumeId" />
+<button class="delete-button" type="submit">Xóa</button>
+</form>
+</article>}</div>}</div>
+</section>

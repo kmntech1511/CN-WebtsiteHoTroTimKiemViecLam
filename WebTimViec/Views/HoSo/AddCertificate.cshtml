@@ -1,0 +1,57 @@
+@model WebTimViec.Models.HoSo.ChungChiViewModel
+@{ ViewData["Title"] = "Thêm chứng chỉ"; }
+<link rel="stylesheet" href="~/css/profile.css" asp-append-version="true" />
+<section class="profile-page">
+<div class="container form-page-container">
+<div class="profile-heading">
+<div>
+<span class="eyebrow">HỒ SƠ TÌM VIỆC</span>
+<h1>Thêm chứng chỉ</h1>
+<p>Bổ sung thông tin chứng chỉ của bạn.</p>
+</div>
+<a class="outline-button" asp-action="Certificates" asp-route-id="@Model.MaHoSo">← Quay lại</a>
+</div>
+<div class="resume-form-card">
+<form asp-action="AddCertificate" method="post" class="resume-form">
+<input asp-for="MaHoSo" type="hidden" />
+<div asp-validation-summary="ModelOnly" class="validation-summary">
+</div>
+<label asp-for="MaChungChi">Chứng chỉ</label>
+<select asp-for="MaChungChi">
+<option value="">-- Chọn chứng chỉ --</option>@foreach(var certificate in (IEnumerable<WebTimViec.Models.Entities.ChungChi>)ViewBag.Certificates){<option value="@certificate.MaChungChi">@certificate.TenChungChi@(string.IsNullOrWhiteSpace(certificate.LoaiChungChi)?"":$" - {certificate.LoaiChungChi}")</option>}</select>
+<span asp-validation-for="MaChungChi" class="field-error">
+</span>
+<div class="form-two-columns">
+<div>
+<label asp-for="SoHieu">
+</label>
+<input asp-for="SoHieu" placeholder="Ví dụ: ABC-2026-001" />
+</div>
+<div>
+<label asp-for="NoiCap">
+</label>
+<input asp-for="NoiCap" placeholder="Ví dụ: Trung tâm đào tạo ABC" />
+</div>
+</div>
+<div class="form-two-columns">
+<div>
+<label asp-for="NgayCap">
+</label>
+<input asp-for="NgayCap" type="date" />
+</div>
+<div>
+<label asp-for="NgayHetHan">
+</label>
+<input asp-for="NgayHetHan" type="date" />
+<span asp-validation-for="NgayHetHan" class="field-error">
+</span>
+</div>
+</div>
+<div class="form-actions">
+<a class="outline-button" asp-action="Certificates" asp-route-id="@Model.MaHoSo">Hủy</a>
+<button class="button" type="submit">Lưu chứng chỉ</button>
+</div>
+</form>
+</div>
+</div>
+</section>
